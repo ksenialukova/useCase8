@@ -1,0 +1,147 @@
+Build initial React app and configure Store: Create a store for the application to store first name, last name, email and message. 
+ChatGPT
+To build an initial React app and configure a store using Redux for state management, follow these steps:
+
+Create a new React app:
+If you don't have create-react-app installed, you can install it globally:
+
+bash
+Copy code
+npm install -g create-react-app
+Now, create a new React application:
+
+bash
+Copy code
+create-react-app redux-store-app
+Navigate to the new directory:
+
+bash
+Copy code
+cd redux-store-app
+Install necessary dependencies:
+For this example, you'll need Redux, React-Redux, and @reduxjs/toolkit:
+
+bash
+Copy code
+npm install redux react-redux @reduxjs/toolkit
+Set up Redux store:
+3.1 Create a slice:
+Create a folder called features in the src directory. Inside this folder, create a file named userSlice.js.
+
+src/features/userSlice.js:
+
+javascript
+Copy code
+import { createSlice } from '@reduxjs/toolkit';
+
+export const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: ''
+  },
+  reducers: {
+    setFirstName: (state, action) => {
+      state.firstName = action.payload;
+    },
+    setLastName: (state, action) => {
+      state.lastName = action.payload;
+    },
+    setEmail: (state, action) => {
+      state.email = action.payload;
+    },
+    setMessage: (state, action) => {
+      state.message = action.payload;
+    },
+  }
+});
+
+export const { setFirstName, setLastName, setEmail, setMessage } = userSlice.actions;
+export const selectUser = state => state.user;
+export default userSlice.reducer;
+3.2 Create the store:
+In the src folder, create a file named store.js.
+
+src/store.js:
+
+javascript
+Copy code
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from './features/userSlice';
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer
+  }
+});
+Use the store in your app:
+Update src/index.js to wrap the App component with the Provider component from react-redux.
+
+src/index.js:
+
+javascript
+Copy code
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import { store } from './store';
+import { Provider } from 'react-redux';
+
+ReactDOM.render(
+  <Provider store={store}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </Provider>,
+  document.getElementById('root')
+);
+Use the Redux state and actions in a component:
+src/App.js:
+
+javascript
+Copy code
+import React from 'react';
+import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFirstName, setLastName, setEmail, setMessage, selectUser } from './features/userSlice';
+
+function App() {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+
+  return (
+    <div className="App">
+      <input 
+        value={user.firstName} 
+        onChange={(e) => dispatch(setFirstName(e.target.value))} 
+        placeholder="First Name"
+      />
+      <input 
+        value={user.lastName} 
+        onChange={(e) => dispatch(setLastName(e.target.value))} 
+        placeholder="Last Name"
+      />
+      <input 
+        value={user.email} 
+        onChange={(e) => dispatch(setEmail(e.target.value))} 
+        placeholder="Email"
+      />
+      <textarea 
+        value={user.message} 
+        onChange={(e) => dispatch(setMessage(e.target.value))} 
+        placeholder="Message"
+      />
+      <div>
+        <p>Name: {user.firstName} {user.lastName}</p>
+        <p>Email: {user.email}</p>
+        <p>Message: {user.message}</p>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+Now, when you run npm start, you'll have a React app with inputs for first name, last name, email, and message. The values are stored in the Redux store and displayed below the inputs.

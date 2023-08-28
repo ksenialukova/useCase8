@@ -1,23 +1,39 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFirstName, setLastName, setEmail, setMessage, selectUser } from './features/userSlice';
 
 function App() {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input 
+        value={user.firstName} 
+        onChange={(e) => dispatch(setFirstName(e.target.value))} 
+        placeholder="First Name"
+      />
+      <input 
+        value={user.lastName} 
+        onChange={(e) => dispatch(setLastName(e.target.value))} 
+        placeholder="Last Name"
+      />
+      <input 
+        value={user.email} 
+        onChange={(e) => dispatch(setEmail(e.target.value))} 
+        placeholder="Email"
+      />
+      <textarea 
+        value={user.message} 
+        onChange={(e) => dispatch(setMessage(e.target.value))} 
+        placeholder="Message"
+      />
+      <div>
+        <p>Name: {user.firstName} {user.lastName}</p>
+        <p>Email: {user.email}</p>
+        <p>Message: {user.message}</p>
+      </div>
     </div>
   );
 }
