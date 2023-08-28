@@ -3,6 +3,7 @@ import { render, fireEvent, screen} from '@testing-library/react';
 import Form from '../Form';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import '@testing-library/jest-dom'
 
 // Create a mock store
 const mockStore = configureMockStore();

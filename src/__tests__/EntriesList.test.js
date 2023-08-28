@@ -4,6 +4,7 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import {rootReducer} from '../store';
 import EntriesList from '../EntriesList';
+import '@testing-library/jest-dom'
 
 describe('<EntriesList />', () => {
     const mockEntries = [
