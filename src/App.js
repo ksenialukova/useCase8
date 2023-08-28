@@ -1,39 +1,120 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { setFirstName, setLastName, setEmail, setMessage, selectUser } from './features/userSlice';
+import validator from 'validator';
+import {useDispatch } from 'react-redux';
+import { setFirstName, setLastName, setEmail, setMessage } from './actions/formActions';
 
 function App() {
-  const user = useSelector(selectUser);
   const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: ''
+  });
+
+  const validateFields = (name, value) => {
+    let newErrors = { ...errors };
+
+    switch (name) {
+      case 'firstName':
+      case 'lastName':
+        if (!value.trim()) {
+          newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+        } else {
+          delete newErrors[name];
+        }
+        break;
+
+      case 'email':
+        if (!validator.isEmail(value)) {
+          newErrors.email = 'Invalid email format';
+        } else {
+          delete newErrors.email;
+        }
+        break;
+
+      case 'message':
+        if (value.trim().length < 10) {
+          newErrors.message = 'Message should be at least 10 characters long';
+        } else {
+          delete newErrors.message;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'firstName':
+        dispatch(setFirstName(value));
+        break;
+      case 'lastName':
+        dispatch(setLastName(value));
+        break;
+      case 'email':
+        if (!validator.isEmail(value)) {
+          setErrors({ ...errors, email: 'Invalid email format' });
+        } else {
+          setErrors({ ...errors, email: null });
+          dispatch(setEmail(value));
+        }
+        break;
+      case 'message':
+        dispatch(setMessage(value));
+        break;
+      default:
+        break;
+    }
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+    validateFields(name, value);
+  };
+
+  const isFormValid = () => {
+    return Object.values(formData).every(val => val.trim() !== '') && Object.keys(errors).length === 0;
+  };
 
   return (
-    <div className="App">
-      <input 
-        value={user.firstName} 
-        onChange={(e) => dispatch(setFirstName(e.target.value))} 
+    <div>
+      <input
+        type="text"
+        name="firstName"
         placeholder="First Name"
+        onChange={handleChange}
       />
-      <input 
-        value={user.lastName} 
-        onChange={(e) => dispatch(setLastName(e.target.value))} 
+      {errors.firstName && <p>{errors.firstName}</p>}
+
+      <input
+        type="text"
+        name="lastName"
         placeholder="Last Name"
+        onChange={handleChange}
       />
-      <input 
-        value={user.email} 
-        onChange={(e) => dispatch(setEmail(e.target.value))} 
+      {errors.lastName && <p>{errors.lastName}</p>}
+
+      <input
+        type="email"
+        name="email"
         placeholder="Email"
+        onChange={handleChange}
       />
-      <textarea 
-        value={user.message} 
-        onChange={(e) => dispatch(setMessage(e.target.value))} 
+      {errors.email && <p>{errors.email}</p>}
+
+      <textarea
+        name="message"
         placeholder="Message"
-      />
-      <div>
-        <p>Name: {user.firstName} {user.lastName}</p>
-        <p>Email: {user.email}</p>
-        <p>Message: {user.message}</p>
-      </div>
+        onChange={handleChange}
+      ></textarea>
+      {errors.message && <p>{errors.message}</p>}
+
+      <button type="submit" disabled={!isFormValid()}>Submit</button>
     </div>
   );
 }
