@@ -1,0 +1,132 @@
+you have an React app with first name, last name, email and message fields and submit button
+please Display a list (could be table) of values in store 
+ChatGPT
+Certainly! To display a list of values from a store, I'm going to assume that you're using Redux for state management in your React application. Here's a simple example of how you can achieve this:
+
+Redux Store Configuration
+First, we need a Redux store:
+
+store.js
+
+javascript
+Copy code
+import { createStore } from 'redux';
+
+const initialState = {
+    entries: []
+};
+
+const rootReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case 'ADD_ENTRY':
+            return { ...state, entries: [...state.entries, action.payload] };
+        default:
+            return state;
+    }
+}
+
+const store = createStore(rootReducer);
+export default store;
+React Components
+Form.js
+
+javascript
+Copy code
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+const Form = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+
+    const dispatch = useDispatch();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const entry = { firstName, lastName, email, message };
+        dispatch({ type: 'ADD_ENTRY', payload: entry });
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setMessage('');
+    }
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
+            <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Message"></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    );
+}
+
+export default Form;
+EntriesList.js
+
+javascript
+Copy code
+import React from 'react';
+import { useSelector } from 'react-redux';
+
+const EntriesList = () => {
+    const entries = useSelector(state => state.entries);
+
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {entries.map((entry, index) => (
+                    <tr key={index}>
+                        <td>{entry.firstName}</td>
+                        <td>{entry.lastName}</td>
+                        <td>{entry.email}</td>
+                        <td>{entry.message}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
+export default EntriesList;
+App Component
+Finally, in your main App component, integrate the form and the list:
+
+App.js
+
+javascript
+Copy code
+import React from 'react';
+import { Provider } from 'react-redux';
+import store from './store';
+import Form from './Form';
+import EntriesList from './EntriesList';
+
+function App() {
+    return (
+        <Provider store={store}>
+            <div className="App">
+                <Form />
+                <EntriesList />
+            </div>
+        </Provider>
+    );
+}
+
+export default App;
+Remember to install the necessary libraries using npm or yarn:
+
+Copy code
+npm install redux react-redux
+This code sets up a form where users can input their details and a table that displays the list of users who have input their details. When the form is submitted, the user's details are added to the Redux store, and the table updates to show the new entry.
