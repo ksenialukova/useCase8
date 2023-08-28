@@ -19,9 +19,15 @@ const Form = () => {
 
     switch (name) {
       case 'firstName':
+        if (!value.trim()) {
+            newErrors[name] = 'First Name is required';
+          } else {
+            delete newErrors[name];
+          }
+          break;
       case 'lastName':
         if (!value.trim()) {
-          newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+          newErrors[name] = 'Last Name is required';
         } else {
           delete newErrors[name];
         }
@@ -91,6 +97,7 @@ const Form = () => {
     <div>
     <form onSubmit={handleSubmit}>
       <input
+      data-testid="firstName"
         type="text"
         name="firstName"
         placeholder="First Name"
@@ -99,6 +106,7 @@ const Form = () => {
       {errors.firstName && <p>{errors.firstName}</p>}
 
       <input
+      data-testid="lastName"
         type="text"
         name="lastName"
         placeholder="Last Name"
@@ -107,6 +115,7 @@ const Form = () => {
       {errors.lastName && <p>{errors.lastName}</p>}
 
       <input
+      data-testid="email"
         type="email"
         name="email"
         placeholder="Email"
@@ -115,6 +124,7 @@ const Form = () => {
       {errors.email && <p>{errors.email}</p>}
 
       <textarea
+      data-testid="message"
         name="message"
         placeholder="Message"
         onChange={handleChange}
